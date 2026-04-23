@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新井健司</title>
+  <style>
+    :root{
+      --navy:#0f2958;
+      --navy2:#173f80;
+      --gold:#d0ab63;
+      --gold2:#f0d7a6;
+      --ink:#1f2937;
+      --muted:#5f6b7a;
+      --cream:#faf7f0;
+      --paper:#fffdfa;
+      --line:#eadfcb;
+      --shadow:0 24px 60px rgba(11,36,77,.12);
+      --shadow-soft:0 10px 24px rgba(15,23,42,.08);
+      --radius:24px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Yu Gothic","Hiragino Sans","Meiryo",sans-serif;
+      color:var(--ink);
+      background:linear-gradient(180deg,#fff,var(--cream));
+    }
+    a{text-decoration:none;color:inherit}
+    img,video{display:block;max-width:100%}
+    .container{width:min(var(--max),92vw);margin:0 auto}
+    .section{padding:86px 0}
+    .section.alt{background:linear-gradient(180deg,#fff,#f7f1e6)}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+      background:rgba(208,171,99,.15);color:#7b5820;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    }
+    h1,h2,h3,h4,p{margin:0}
+    h1{font-size:clamp(34px,5vw,62px);line-height:1.12;color:#fff;letter-spacing:.01em}
+    h2{font-size:clamp(28px,3.5vw,44px);line-height:1.22;color:var(--navy);margin-top:14px}
+    h3{font-size:23px;line-height:1.35;color:var(--navy)}
+    .sub{margin-top:16px;color:var(--muted);line-height:1.95;font-size:16px}
+
+    .nav{
+      position:sticky;top:0;z-index:1000;
+      backdrop-filter:blur(14px);
+      background:rgba(255,255,255,.88);
+      border-bottom:1px solid rgba(208,171,99,.25);
+    }
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 0}
+    .brand{font-size:20px;font-weight:900;color:var(--navy);letter-spacing:.02em}
+    .nav-links{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;font-weight:800;color:#334155}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:999px;font-weight:900;transition:.22s ease;border:none;cursor:pointer}
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1f2937;box-shadow:var(--shadow-soft)}
+    .btn-dark{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;box-shadow:var(--shadow)}
+    .btn-light{background:#fff;color:var(--navy);border:1px solid rgba(255,255,255,.35)}
+
+    .hero{
+      position:relative;overflow:hidden;min-height:100svh;display:flex;align-items:center;
+      background:
+        linear-gradient(180deg,rgba(4,18,43,.62) 0%,rgba(8,28,60,.78) 36%,rgba(8,28,60,.88) 100%),
+        radial-gradient(circle at top right,rgba(240,215,166,.18),transparent 28%),
+        url("hero.jpg") center top / cover no-repeat;
+      color:#fff;
+    }
+    .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,24,53,.62) 0%,rgba(7,24,53,.42) 36%,rgba(7,24,53,.24) 100%)}
+    .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:150px;background:linear-gradient(180deg,rgba(250,247,240,0),rgba(250,247,240,1))}
+    .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr;gap:0;align-items:center;padding:132px 0 110px;min-height:calc(100svh - 72px)}
+    .hero-copy{max-width:760px;text-align:center;margin:0 auto}
+    .hero-copy p{margin-top:20px;font-size:clamp(16px,1.9vw,19px);line-height:1.95;color:rgba(255,255,255,.94)}
+    .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px;justify-content:center}
+    .hero-lead{
+      margin-top:26px;padding:18px 20px;border-radius:22px;background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(10px);color:rgba(255,255,255,.95);
+      line-height:1.9;font-size:15px
+    }
+    .hero-anchor{
+      margin-top:28px;display:inline-flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:14px;
+      opacity:.92
+    }
+    .hero-anchor::after{content:"↓";font-size:16px}
+
+    .section-head{text-align:center;max-width:860px;margin:0 auto 34px}
+    .grid-3,.grid-2,.grid-4{display:grid;gap:22px}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    .grid-4{grid-template-columns:repeat(4,1fr)}
+    .card,.issue,.step,.faq,.metric,.viewer,.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-soft)}
+    .issue,.card,.step,.faq,.metric,.panel{padding:24px}
+    .issue .n,.step .n{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgba(208,171,99,.16);color:#7b5820;font-weight:900;margin-bottom:14px}
+    .issue p,.card p,.step p,.faq p,.metric p,.panel p{margin-top:10px;color:#475467;line-height:1.85}
+    .metric{text-align:center}
+    .metric strong{display:block;font-size:34px;line-height:1;color:var(--navy);margin-bottom:8px}
+
+    .promise{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:start}
+    .bullet-list{padding-left:18px;margin:14px 0 0}
+    .bullet-list li{margin-top:6px;color:#475467;line-height:1.85}
+    .feature-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+    .mini-card{padding:20px;border-radius:20px;background:#fff;border:1px solid var(--line)}
+    .mini-card h4{font-size:18px;color:var(--navy);margin-bottom:8px}
+    .mini-card p{color:#475467;line-height:1.8;font-size:15px}
+
+    .viewer{overflow:hidden;padding:0}
+    .viewer-head{padding:18px 20px;background:linear-gradient(180deg,#fff,#fbf7ef);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    .tab{padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--navy);font-weight:900;cursor:pointer}
+    .tab.active{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-color:transparent}
+    iframe.frame{width:100%;height:760px;border:none;background:#fff}
+    iframe.mini{width:100%;height:560px;border:none;background:#fff}
+    .viewer-body{padding:20px}
+
+    .media-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    .media-box{padding:24px;border-radius:24px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)}
+    .player{overflow:hidden;border-radius:20px;border:1px solid var(--line);background:#000;margin-top:14px}
+    audio{width:100%;margin-top:14px}
+
+    .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+    .faq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+
+    .cta{padding-bottom:90px}
+    .cta-panel{padding:40px;border-radius:30px;background:linear-gradient(135deg,var(--navy),var(--navy2));box-shadow:var(--shadow)}
+    .cta-panel h2,.cta-panel p{color:#fff}
+    .cta-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+    .footer{padding:24px 0 42px;font-size:13px;color:#667085;text-align:center}
+
+    .floating{position:fixed;right:18px;bottom:18px;z-index:1000;padding:14px 18px;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1f2937;font-weight:900;box-shadow:0 16px 34px rgba(12,42,88,.22)}
+
+    @media (max-width:1100px){
+      .promise,.media-wrap,.grid-2{grid-template-columns:1fr}
+      .grid-3,.steps,.faq-grid,.feature-row,.grid-4{grid-template-columns:repeat(2,1fr)}
+      iframe.frame{height:620px} iframe.mini{height:460px}
+    }
+    @media (max-width:760px){
+      .nav-inner{flex-direction:column;align-items:flex-start}
+      .section{padding:58px 0}
+      .hero-grid{padding:118px 0 84px}
+      .grid-3,.steps,.faq-grid,.feature-row,.grid-4{grid-template-columns:1fr}
+      iframe.frame{height:520px} iframe.mini{height:360px}
+      .floating{left:12px;right:12px;text-align:center}
+      .hero-copy{text-align:left}
+      .hero-actions{justify-content:flex-start}
+      .hero-anchor{display:none}
+    }
+  </style>
+
+<style>
+/* Override: stack 解説ビュー → 資料ビュー vertically */
+.grid-2{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:32px !important;
+}
+</style>
+
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">新井健司</div>
+      <div class="nav-links">
+        <a href="#overview">概要</a>
+        <a href="#issues">課題</a>
+        <a href="#guide">活動分野のご紹介</a>
+        <a href="#viewer">資料</a>
+        <a href="#media">映像・音声</a>
+              </div>
+      <a class="btn btn-dark" href="#guide">活動分野のご紹介を見る</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="overview">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Legacy Donation</span>
+        <h1>未来へつなぐ想いを、<br>活動分野から選ぶ。</h1>
+        <p>
+          教育・医療・環境・地域・福祉など、関心のある分野から承継寄付の全体像をたどれるよう、
+          必要な情報を一つのページに整理しています。
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#guide">活動分野のご紹介を見る</a>
+          <a class="btn btn-light" href="#viewer">資料を見る</a>
+        </div>
+        <div class="hero-lead">
+          活動分野のご紹介を起点に、制度解説ページ、調査資料、承継寄付の流れ、
+          動画、音声まで続けてご確認いただけます。
+        </div>
+        <a class="hero-anchor" href="#guide">この先へ</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section alt">
+    <div class="container grid-4">
+      <div class="metric"><strong>50兆円</strong><p>年間相続資産の推計規模</p></div>
+      <div class="metric"><strong>57億円超</strong><p>累計の将来遺贈誓約額</p></div>
+      <div class="metric"><strong>最大10万円</strong><p>フリーウィルズの助成上限</p></div>
+      <div class="metric"><strong>400名超</strong><p>承継寄付診断士の受講実績</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="issues">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Overview</span>
+        <h2>承継寄付を、活動分野からわかりやすく整理</h2>
+        <p class="sub">まず全体像をつかみ、その後に制度理解や具体的な寄付先確認へ進める構成です。</p>
+      </div>
+      <div class="grid-3">
+        <div class="issue">
+          <div class="n">01</div>
+          <h3>活動分野から考えられる</h3>
+          <p>承継寄付を制度の話からではなく、医療・教育・環境・地域などのテーマから見られるようにしています。</p>
+        </div>
+        <div class="issue">
+          <div class="n">02</div>
+          <h3>寄付先を比較しやすい</h3>
+          <p>活動分野ガイドと一覧表を組み合わせ、候補を横断的に確認しやすくしています。</p>
+        </div>
+        <div class="issue">
+          <div class="n">03</div>
+          <h3>関連資料をまとめて見られる</h3>
+          <p>制度解説ページ、調査報告、承継寄付の流れ、動画、音声を1ページにまとめ、必要な情報へそのまま進めます。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container promise">
+      <div class="panel">
+        <span class="eyebrow">Overview</span>
+        <h2>どんな未来を応援したいかで、寄付先を選ぶ。</h2>
+        <p>命と暮らし、世界の困難、子どもたちの笑顔、自然と命、地域と社会の基盤。<strong>5つの切り口</strong>から寄付先を探せます。</p>
+        <ul class="bullet-list">
+          <li>活動分野のご紹介で、関心のあるテーマを見つける</li>
+          <li>制度解説ページや調査報告で、制度や背景を確認する</li>
+          <li>一覧表・動画・音声で、候補や想いを深める</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <span class="eyebrow">Five Paths</span>
+        <div class="feature-row">
+          <div class="mini-card">
+            <h4>命と暮らしを守る</h4>
+            <p>医療・災害支援など、緊急性の高い分野を確認できます。</p>
+          </div>
+          <div class="mini-card">
+            <h4>次世代を育てる</h4>
+            <p>子ども・教育・福祉に関わる寄付先へつなげられます。</p>
+          </div>
+          <div class="mini-card">
+            <h4>自然と地域を支える</h4>
+            <p>環境・自然保護、地域・研究・福祉の切り口まで幅広く確認できます。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="guide">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Main Visual</span>
+        <h2>活動分野のご紹介</h2>
+        <p class="sub">活動分野ごとの入口をひと目で確認できるメインビジュアルです。</p>
+      </div>
+      <div class="viewer">
+        <div class="viewer-head">
+          <strong>活動分野のご紹介</strong>
+          <a class="btn btn-dark" href="#viewer">詳細資料へ進む</a>
+        </div>
+        <div class="viewer-body">
+          <img src="承継寄付.png" alt="活動分野で選ぶ承継寄付ガイド" style="width:100%;border-radius:20px;border:1px solid var(--line);box-shadow:var(--shadow-soft)">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="viewer">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Documents</span>
+        <h2>制度解説ページと資料をまとめて閲覧</h2>
+        <p class="sub">制度理解、調査データ、ロードマップ、一覧表をこのページから確認できます。</p>
+      </div>
+      <div class="grid-2">
+        <div class="viewer">
+          <div class="viewer-head">
+            <strong>制度解説ページ</strong>
+            <span>制度の概要をご確認いただけます</span>
+          </div>
+          <div class="viewer-body">
+            <iframe class="mini" src="izoukifu.html" title="制度解説ページ"></iframe>
+          </div>
+        </div>
+        <div class="viewer">
+          <div class="viewer-head">
+            <strong>資料ビューア</strong>
+            <div class="tabs">
+              <button class="tab active" data-src="Will for Japan 調査報告.pdf">調査報告</button>
+              <button class="tab" data-src="Legacy_Donation_Roadmap.pdf">ロードマップ</button>
+                            <button class="tab" data-src="活動分野と公式サイトURLを結合した一覧表.pdf">一覧表</button>
+            </div>
+          </div>
+          <div class="viewer-body">
+            <iframe id="pdfFrame" class="frame" src="Will for Japan 調査報告.pdf" title="PDFビューア"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="media">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Video & Audio</span>
+        <h2>動画と音声で承継寄付の世界観を伝える</h2>
+        <p class="sub">映像と音声をあわせて確認できます。</p>
+      </div>
+      <div class="media-wrap">
+        <div class="media-box">
+          <h3>動画</h3>
+          <p class="sub">承継寄付の世界観や訴求の方向性を視覚的に伝えるための動画です。</p>
+          <div class="player">
+            <video controls preload="metadata" style="width:100%">
+              <source src="あなたのレガシー、再考：遺贈寄付の力.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <div class="media-box">
+          <h3>音声</h3>
+          <p class="sub">承継寄付のメッセージを音声で確認できます。</p>
+          <audio controls preload="metadata">
+            <source src="承継寄付で社会のOSを書き換える.m4a" type="audio/mp4">
+          </audio>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">© 新井健司</div>
+
+  <a class="floating" href="#guide">活動分野のご紹介を見る</a>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const pdfFrame = document.getElementById('pdfFrame');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        pdfFrame.src = tab.dataset.src;
+      });
+    });
+  </script>
+</body>
+</html>

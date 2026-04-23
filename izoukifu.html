@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will for Japan - 遺贈寄付を日本の文化に</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* * Theme Configuration & Base Styles 
+         * Palette: Warm Neutrals & Trusting Bronze
+         * Background: #FAF8F5 (Soft Paper)
+         * Text: #2D3748 (Deep Gray)
+         * Accent Primary: #B8905B (Bronze/Gold - represents legacy/value)
+         * Accent Secondary: #718096 (Muted Blue/Gray)
+         */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FAF8F5;
+            color: #2D3748;
+        }
+
+        h1, h2, h3, .font-serif-ja {
+            font-family: 'Shippori Mincho', serif;
+        }
+
+        .accent-color { color: #B8905B; }
+        .bg-accent-color { background-color: #B8905B; }
+        .border-accent-color { border-color: #B8905B; }
+
+        /* Strict Chart Container Styling as requested */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Custom UI Elements */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .hover-lift {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* FAQ Flip Card CSS */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 220px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .flip-card-front {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .flip-card-back {
+            background-color: #B8905B;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* Scroll Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-[#B8905B] selection:text-white">
+
+    <!-- Chosen Palette: Warm Neutrals (#FAF8F5 base) with Trusting Bronze (#B8905B) accents to convey dignity, warmth, and legacy. -->
+    
+    <!-- Application Structure Plan: 
+         A single-page scrolling narrative designed to guide the user through the concept of Legacy Giving (遺贈寄付). 
+         1. Hero: Introduces the core concept and mission.
+         2. Problem/Solution (Misconceptions): Uses interactive flip cards to address common fears (e.g., "Is it only for the rich?"). This breaks down barriers early.
+         3. The Ecosystem (How we help): Details the three pillars (Magazine, Campaign, Specialists) to show tangible support.
+         4. Impact/Exploration: An interactive chart and filterable list of partner organizations. This moves the user from "understanding" to "actionable visualization" of where their legacy could go. 
+         This structure is chosen to educate first, reassure second, and present concrete options third, optimizing for conversion and understanding. -->
+
+    <!-- Visualization & Content Choices:
+         1. Concept Explanation -> Text & Layout -> Simple grid -> Clarity.
+         2. FAQs/Myths -> CSS Flip Cards -> Interactive discovery -> Encourages active reading over passive scrolling.
+         3. Ecosystem Stats -> CSS Grid Cards with Icons (Unicode) -> Quick comprehension -> Shows scale and authority.
+         4. Partner NGOs -> Donut Chart (Chart.js) + Dynamic List (Vanilla JS) -> Interactive filtering -> Allows users to explore causes they care about based on report data without overwhelming them with a static list.
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All visual elements rely on CSS, HTML structures, Unicode, or Canvas (Chart.js). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-panel border-b border-gray-200 transition-all duration-300" id="navbar">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <span class="text-2xl accent-color">☙</span>
+                    <span class="font-serif-ja font-bold text-xl tracking-wider text-gray-800">Will for Japan</span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium">
+                    <a href="#about" class="text-gray-600 hover:text-[#B8905B] transition">遺贈寄付とは</a>
+                    <a href="#initiatives" class="text-gray-600 hover:text-[#B8905B] transition">3つの取り組み</a>
+                                    </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10 fade-in-up">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                「遺贈寄付」を文化にする。<br>
+                <span class="accent-color text-3xl md:text-4xl mt-2 block">想いと財産を、次の世代へ。</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+                人生で使いきらなかったお金を、死後に寄付する「遺贈寄付」。<br>
+                遺言書を残すことで、相続は単なる「権利」から、未来への温かい「ギフト」へと変わります。<br>
+                日本承継寄付協会は、誰もが自分の意思（Will）を残せる社会をつくります。
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#about" class="px-8 py-3 bg-white border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition shadow-sm">
+                    遺贈寄付について知る
+                </a>
+                <a href="#partners" class="px-8 py-3 bg-accent-color text-white rounded-full font-medium hover:bg-yellow-700 transition shadow-md">
+                    寄付先団体を見る
+                </a>
+            </div>
+        </div>
+        <!-- Decorative Background Elements (CSS only) -->
+        <div class="absolute top-20 -left-20 w-72 h-72 bg-yellow-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -z-10"></div>
+        <div class="absolute bottom-10 -right-20 w-96 h-96 bg-orange-50 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -z-10"></div>
+    </header>
+
+    <!-- Section 1: About & Misconceptions -->
+    <section id="about" class="py-20 bg-white border-y border-gray-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in-up">
+                <span class="text-sm font-bold tracking-widest accent-color uppercase">FAQ & Misconceptions</span>
+                <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-6">遺贈寄付に関する「誤解」</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    このセクションでは、遺贈寄付（亡くなった後の寄付）に対して多くの人が抱く疑問や誤解を紐解きます。カードをタップ（クリック）して、正しい知識をご確認ください。遺贈寄付は決して特別な人だけのものではありません。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="flip-card fade-in-up" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <span class="text-4xl mb-4">💰</span>
+                            <h3 class="text-lg font-bold text-gray-800">Q. 老後のお金が心配。<br>遺贈寄付は富裕層向け？</h3>
+                            <p class="text-sm text-gray-500 mt-4 text-center">タップして回答を見る</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3 class="text-lg font-bold mb-3 border-b border-white/30 pb-2">A. 誰もが参加できる寄付です</h3>
+                            <p class="text-sm text-white/90 text-left leading-relaxed">
+                                亡くなった後の寄付であり、老後の生活資金とは関係ありません。「生活に余裕がないから」と思っていた方ほど、遺贈寄付なら無理なく社会に貢献できます。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="flip-card fade-in-up" onclick="this.classList.toggle('flipped')" style="transition-delay: 100ms;">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <span class="text-4xl mb-4">👨‍👩‍👧‍👦</span>
+                            <h3 class="text-lg font-bold text-gray-800">Q. 相続でお金が寄付されたら、<br>家族が揉めるのでは？</h3>
+                            <p class="text-sm text-gray-500 mt-4 text-center">タップして回答を見る</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3 class="text-lg font-bold mb-3 border-b border-white/30 pb-2">A. むしろトラブルを防ぎます</h3>
+                            <p class="text-sm text-white/90 text-left leading-relaxed">
+                                相続トラブルの多くは親族間の感情が原因です。遺言書による遺贈寄付は「本人の明確な意思」に基づくため、むしろ感情的なもつれが起きにくいのが特徴です。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="flip-card fade-in-up" onclick="this.classList.toggle('flipped')" style="transition-delay: 200ms;">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <span class="text-4xl mb-4">🏢</span>
+                            <h3 class="text-lg font-bold text-gray-800">Q. 寄付先はどうやって<br>選べばいいの？</h3>
+                            <p class="text-sm text-gray-500 mt-4 text-center">タップして回答を見る</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3 class="text-lg font-bold mb-3 border-b border-white/30 pb-2">A. 幅広い選択肢があります</h3>
+                            <p class="text-sm text-white/90 text-left leading-relaxed">
+                                教育、医療、環境保全、災害支援など、ご自身の想いに合ったNPO法人、自治体、大学などを指定できます。情報誌「えんギフト」で多数紹介しています。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Core Initiatives -->
+    <section id="initiatives" class="py-20 bg-[#FAF8F5]">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in-up">
+                <span class="text-sm font-bold tracking-widest accent-color uppercase">Our Initiatives</span>
+                <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-6">遺贈寄付を当たり前にする仕組み</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    当協会（Will for Japan）は、寄付を検討する方への直接的なサポートから、専門家の育成、情報提供まで、包括的なアプローチで遺贈寄付のハードルを下げています。以下の3つの柱を中心に活動しています。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Initiative 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover-lift fade-in-up">
+                    <div class="w-12 h-12 bg-yellow-50 text-accent-color rounded-xl flex items-center justify-center text-2xl mb-6">
+                        📘
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 border-b-2 border-accent-color inline-block pb-1">えんギフト</h3>
+                    <p class="text-sm text-accent-color font-bold mb-2">遺贈寄付の情報発信メディア</p>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                        遺贈寄付のやり方や、厳選された寄付先団体（31組織）を紹介する日本で唯一の総合誌。相続の現場で重宝されています。
+                    </p>
+                    <ul class="text-sm text-gray-500 space-y-1">
+                        <li>✓ 全国 <strong class="text-gray-800">805</strong> 箇所に設置</li>
+                        <li>✓ 発行部数 <strong class="text-gray-800">11,000</strong> 冊以上</li>
+                        <li>✓ 無料配布・資料請求可能</li>
+                    </ul>
+                </div>
+
+                <!-- Initiative 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover-lift fade-in-up" style="transition-delay: 100ms;">
+                    <div class="w-12 h-12 bg-yellow-50 text-accent-color rounded-xl flex items-center justify-center text-2xl mb-6">
+                        ✍️
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 border-b-2 border-accent-color inline-block pb-1">フリーウィルズ</h3>
+                    <p class="text-sm text-accent-color font-bold mb-2">遺言書作成費用の助成</p>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                        遺贈寄付の最大のハードルである「遺言書作成」にかかる専門家報酬（公正証書作成費等）を協会が助成するキャンペーン。
+                    </p>
+                    <ul class="text-sm text-gray-500 space-y-1">
+                        <li>✓ 最大 <strong class="text-gray-800">10万円</strong> を助成</li>
+                        <li>✓ 10万円以上の寄付予定者が対象</li>
+                        <li>✓ 寄付者の金銭的負担を軽減</li>
+                    </ul>
+                </div>
+
+                <!-- Initiative 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover-lift fade-in-up" style="transition-delay: 200ms;">
+                    <div class="w-12 h-12 bg-yellow-50 text-accent-color rounded-xl flex items-center justify-center text-2xl mb-6">
+                        🎓
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 border-b-2 border-accent-color inline-block pb-1">承継寄付診断士</h3>
+                    <p class="text-sm text-accent-color font-bold mb-2">寄付の専門家育成</p>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                        「寄付の相談ができる専門家が足りない」という課題を解決。士業や金融機関向けに専門知識を提供する講座を創設。
+                    </p>
+                    <ul class="text-sm text-gray-500 space-y-1">
+                        <li>✓ ニーズを汲み取る提案力</li>
+                        <li>✓ 税金トラブルの防止</li>
+                        <li>✓ 想いを届ける伴走者育成</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Interactive Partner Data -->
+    <section id="partners" class="py-20 bg-white border-t border-gray-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in-up">
+                <span class="text-sm font-bold tracking-widest accent-color uppercase">Find Your Cause</span>
+                <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-6">想いを託す、多様な寄付先</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    「えんギフト」に掲載されている団体の分野別割合です。左のグラフ（Donut Chart）の各カテゴリーをクリックすると、右側に該当する代表的な団体（レポート掲載データ抜粋）が表示されます。あなたの価値観に合う活動を見つけてください。
+                </p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-12 items-start">
+                
+                <!-- Chart Area -->
+                <div class="w-full lg:w-1/2 fade-in-up">
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <h3 class="text-center font-bold text-gray-800 mb-4">寄付先団体の主な活動分野</h3>
+                        <p class="text-xs text-center text-gray-500 mb-4">※グラフの項目をタップしてリストを絞り込み</p>
+                        
+                        <!-- STRICT CHART CONTAINER -->
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-6 flex justify-center">
+                            <button id="resetFilterBtn" class="hidden text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 py-1 px-4 rounded-full transition">
+                                絞り込みを解除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic List Area -->
+                <div class="w-full lg:w-1/2 fade-in-up" style="transition-delay: 200ms;">
+                    <div class="flex justify-between items-end mb-4 border-b border-gray-200 pb-2">
+                        <h3 class="font-bold text-xl text-gray-800">
+                            掲載団体一覧 <span id="currentCategoryLabel" class="text-base font-normal text-accent-color ml-2">(すべて表示中)</span>
+                        </h3>
+                        <span class="text-xs text-gray-500">※えんギフト掲載団体の一部</span>
+                    </div>
+                    
+                    <div id="partnerList" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- List populated by JavaScript -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / CTA -->
+   
+
+    <footer class="bg-black text-gray-500 py-8 text-center text-sm">
+        <p></p>
+        <p class="mt-2 text-xs">※このサイトは提供された資料に基づくデモ用のシングルページアプリケーションです。</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. Data Management ---
+            // Data extracted/inferred from the provided PDF snippet (承継寄付先一覧.pdf) and PR texts
+            const partnerData = [
+                { name: '空飛ぶ捜索医療団 ARROWS', category: '災害・医療', desc: '災害現場での医療支援や救助活動' },
+                { name: 'Civic Force', category: '災害・医療', desc: '国内外の大規模災害発生時の迅速な物資提供・復興支援' },
+                { name: '日本IDDMネットワーク', category: '災害・医療', desc: '1型糖尿病患者の支援・根絶に向けた研究助成' },
+                
+                { name: '難民を助ける会(AAR Japan)', category: '国際協力', desc: '紛争や災害の難民への人道支援、教育・医療支援' },
+                { name: '国連WFP協会', category: '国際協力', desc: '飢餓や栄養不良に苦しむ人々への食糧支援' },
+                { name: 'ワールド・ビジョン・ジャパン', category: '国際協力', desc: '開発途上国の子ども支援・地域開発' },
+                { name: 'かものはしプロジェクト', category: '国際協力', desc: '子どもが売られる問題の解決' },
+                
+                { name: 'フローレンス', category: '子ども・福祉', desc: '病児保育、ひとり親家庭支援、子どもの貧困対策' },
+                { name: 'キッズドア', category: '子ども・福祉', desc: '国内の子どもの貧困に対する学習支援' },
+                { name: 'ノーベル', category: '子ども・福祉', desc: '子どもや家庭への支援、地域コミュニティづくり' },
+                { name: 'あしなが育英会', category: '子ども・福祉', desc: '病気・災害等で親を亡くした子どもへの進学支援' },
+                { name: 'チャンス・フォー・チルドレン', category: '子ども・福祉', desc: '経済的困難を抱える子どもへの学校外教育支援' },
+                { name: '全国こども食堂支援センター', category: '子ども・福祉', desc: 'こども食堂の支援・ネットワーク構築' },
+                { name: '抱樸', category: '子ども・福祉', desc: '生活困窮者・ホームレス状態の方の自立支援' },
+                
+                { name: 'WWFジャパン', category: '環境・動物', desc: '地球環境保全、生態系保護、絶滅危惧種の保護' },
+                { name: 'グリーンピース・ジャパン', category: '環境・動物', desc: '環境問題の調査・気候変動対策' },
+                { name: '日本自然保護協会', category: '環境・動物', desc: '国内の自然環境保護、生物多様性の保全' },
+                { name: 'ピースワンコ・ジャパン', category: '環境・動物', desc: '保護犬の譲渡活動、動物福祉啓発' },
+                
+                { name: 'Leap for', category: '教育・地域', desc: '地域の教育資源を活用した学びの場づくり' },
+                { name: '地域・教育魅力化プラットフォーム', category: '教育・地域', desc: '地域資源を活かした学校づくり' },
+                { name: '東京大学', category: '教育・地域', desc: '教育研究活動への支援' },
+                { name: '大阪大学', category: '教育・地域', desc: '教育研究活動への支援' },
+                { name: '裾野市', category: '教育・地域', desc: '持続可能なまちづくりの推進（自治体協定）' }
+            ];
+
+            // Aggregate data for the Chart
+            const categoryCounts = {};
+            partnerData.forEach(p => {
+                categoryCounts[p.category] = (categoryCounts[p.category] || 0) + 1;
+            });
+
+            const chartLabels = Object.keys(categoryCounts);
+            const chartDataValues = Object.values(categoryCounts);
+            // Matched colors to the theme
+            const chartColors = ['#B8905B', '#4A5568', '#E2E8F0', '#CBD5E1', '#94A3B8'];
+
+            // --- 2. Chart.js Implementation ---
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            const categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        data: chartDataValues,
+                        backgroundColor: chartColors,
+                        borderWidth: 2,
+                        borderColor: '#F9FAFB',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // CRITICAL: Allows the chart to fill the container defined in CSS
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: "'Noto Sans JP', sans-serif" },
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(45, 55, 72, 0.9)',
+                            titleFont: { family: "'Noto Sans JP', sans-serif", size: 14 },
+                            bodyFont: { family: "'Noto Sans JP', sans-serif", size: 13 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw}団体`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%',
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const selectedCategory = chartLabels[index];
+                            filterList(selectedCategory);
+                        }
+                    }
+                }
+            });
+
+            // --- 3. Dynamic List Rendering ---
+            const listContainer = document.getElementById('partnerList');
+            const categoryLabel = document.getElementById('currentCategoryLabel');
+            const resetBtn = document.getElementById('resetFilterBtn');
+
+            function renderList(data) {
+                listContainer.innerHTML = ''; // Clear current
+                if (data.length === 0) {
+                    listContainer.innerHTML = '<p class="text-gray-500 text-sm">該当する団体がありません。</p>';
+                    return;
+                }
+
+                data.forEach(partner => {
+                    // Create list item using template literal for clarity
+                    const itemHTML = `
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-[#B8905B] transition duration-200 group">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span class="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded mb-2">${partner.category}</span>
+                                    <h4 class="font-bold text-gray-800 group-hover:text-[#B8905B] transition">${partner.name}</h4>
+                                    <p class="text-xs text-gray-500 mt-1 line-clamp-2">${partner.desc}</p>
+                                </div>
+                                <div class="text-[#B8905B] opacity-0 group-hover:opacity-100 transition transform translate-x-[-10px] group-hover:translate-x-0">
+                                    ➔
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    listContainer.insertAdjacentHTML('beforeend', itemHTML);
+                });
+            }
+
+            function filterList(category) {
+                const filteredData = partnerData.filter(p => p.category === category);
+                renderList(filteredData);
+                categoryLabel.textContent = `(${category})`;
+                resetBtn.classList.remove('hidden');
+                
+                // Highlight chart segment (optional visual feedback)
+                // categoryChart.update();
+            }
+
+            // Initial render
+            renderList(partnerData);
+
+            // Reset logic
+            resetBtn.addEventListener('click', () => {
+                renderList(partnerData);
+                categoryLabel.textContent = '(すべて表示中)';
+                resetBtn.classList.add('hidden');
+                categoryChart.setActiveElements([]); // Clear chart selection visual
+                categoryChart.update();
+            });
+
+
+            // --- 4. Scroll Reveal Animation ---
+            const fadeElements = document.querySelectorAll('.fade-in-up');
+            
+            const elementInView = (el, dividend = 1) => {
+                const elementTop = el.getBoundingClientRect().top;
+                return (elementTop <= (window.innerHeight || document.documentElement.clientHeight) / dividend);
+            };
+
+            const displayScrollElement = (element) => {
+                element.classList.add('visible');
+            };
+
+            const handleScrollAnimation = () => {
+                fadeElements.forEach((el) => {
+                    if (elementInView(el, 1.1)) {
+                        displayScrollElement(el);
+                    }
+                })
+            }
+
+            // Initial check and scroll listener
+            window.addEventListener('scroll', () => {
+                handleScrollAnimation();
+            });
+            handleScrollAnimation(); // Trigger on load
+
+            // Navbar style on scroll
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('shadow-md');
+                    navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                } else {
+                    navbar.classList.remove('shadow-md');
+                    navbar.style.background = 'rgba(255, 255, 255, 0.8)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
